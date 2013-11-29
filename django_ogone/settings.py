@@ -16,29 +16,29 @@ except ImportError:
     settings = {}
 
 #These four you probably want to change
-PSPID = getattr(settings, 'OGONE_PSPID', None)
-SHA_PRE_SECRET = getattr(settings, 'OGONE_SHA_PRE_SECRET', None)
-SHA_POST_SECRET = getattr(settings, 'OGONE_SHA_POST_SECRET', None)
-CURRENCY = getattr(settings, 'OGONE_CURRENCY', 'EUR')
+OGONE_PSPID = getattr(settings, 'OGONE_PSPID', None)
+OGONE_SHA_PRE_SECRET = getattr(settings, 'OGONE_SHA_PRE_SECRET', None)
+OGONE_SHA_POST_SECRET = getattr(settings, 'OGONE_SHA_POST_SECRET', None)
+OGONE_CURRENCY = getattr(settings, 'OGONE_CURRENCY', 'EUR')
 
 #only touch these if you know whats happening :P
-HASH_METHOD = getattr(settings, 'OGONE_HASH_METHOD', 'sha512')
+OGONE_HASH_METHOD = getattr(settings, 'OGONE_HASH_METHOD', 'sha512')
 #for other hashmethods see http://docs.python.org/library/hashlib.html
 #ogone default is sha1
-PRODUCTION = not getattr(settings, 'DEBUG', True)
+OGONE_PRODUCTION = not getattr(settings, 'DEBUG', True)
 
 # Standard URLs. We might want to override these in the future for some
 # reason.
-TEST_URL = getattr(settings, "OGONE_TEST_URL",
+OGONE_TEST_URL = getattr(settings, "OGONE_TEST_URL",
     "https://secure.ogone.com/ncol/test/orderstandard.asp")
-PROD_URL = getattr(settings, "OGONE_PROD_URL",
+OGONE_PROD_URL = getattr(settings, "OGONE_PROD_URL",
     "https://secure.ogone.com/ncol/prod/orderstandard.asp")
 
 # DirectLink
-USERID = getattr(settings, 'OGONE_USERID', None)
-PSWD = getattr(settings, 'OGONE_PSWD', None)
+OGONE_API_USRID = getattr(settings, 'OGONE_API_USRID', None)
+OGONE_API_PSWD = getattr(settings, 'OGONE_API_PSWD', None)
 
-DIRECT_LINK_TEST_URL = getattr(settings, "OGONE_DIRECT_LINK_TEST_URL",
-    "https://secure.ogone.com/ncol/test/maintenancedirect.asp")
-DIRECT_LINK_PROD_URL = getattr(settings, "OGONE_DIRECT_LINK_PROD_URL",
-    "https://secure.ogone.com/ncol/prod/maintenancedirect.asp")
+OGONE_DIRECT_LINK_TEST_URL = getattr(settings, "OGONE_DIRECT_LINK_TEST_URL",
+    "https://secure.ogone.com/ncol/test/orderdirect.asp")
+OGONE_DIRECT_LINK_PROD_URL = getattr(settings, "OGONE_DIRECT_LINK_PROD_URL",
+    "https://secure.ogone.com/ncol/prod/orderdirect.asp")

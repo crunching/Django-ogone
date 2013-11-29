@@ -47,14 +47,14 @@ class Ogone(object):
     def get_action(production=None, settings=ogone_settings):
         """ Get the relevant action parameter from the settings. """
 
-        PROD_URL = settings.PROD_URL
-        TEST_URL = settings.TEST_URL
+        PROD_URL = settings.OGONE_PROD_URL
+        TEST_URL = settings.OGONE_TEST_URL
 
         assert isinstance(PROD_URL, unicode) or isinstance(PROD_URL, str)
         assert isinstance(TEST_URL, unicode) or isinstance(TEST_URL, str)
 
         if production is None:
-            production = settings.PRODUCTION
+            production = settings.OGONE_PRODUCTION
 
         if production:
             log.debug('Returning production URL: %s', PROD_URL)
@@ -66,22 +66,19 @@ class Ogone(object):
     @classmethod
     def get_data(cls, data, settings=ogone_settings):
         # Check for obligatory fields
-        assert 'language' in data
-        assert 'orderID' in data
-        assert 'amount' in data
-        # Make sure amount is an int
-        assert isinstance(data['amount'], (int, long)) or data['amount'].isdigit()
+        assert 'LANGUAGE' in data
+        assert 'ORDERID' in data
+        assert 'AMOUNT' in data
+        assert isinstance(data['AMOUNT'], (int, long)) or data['AMOUNT'].isdigit()
 
-        data['currency'] = data.get('currency') or settings.CURRENCY
-        data['PSPID'] = settings.PSPID
-        data['SHASign'] = cls.sign(data, settings=settings)
-
+        data['CURRENCY'] = data.get('currency') or settings.OGONE_CURRENCY
+        data['PSPID'] = settings.OGONE_PSPID
+        data['SHASIGN'] = cls.sign(data, settings=settings)
         return data
 
     @classmethod
     def get_form(cls, data, settings=ogone_settings):
-        enriched_data = cls.get_data(data, settings)
-
+        enriched_data = cls.get_data(data, settings=settings)
         log.debug('Sending the following data to Ogone: %s', enriched_data)
         form = ogone_forms.OgoneForm(enriched_data)
 
@@ -94,7 +91,6 @@ class Ogone(object):
 
         ogone_signature = self.get_ogone_signature()
         signature = self.compute_signature(out=True)
-
         return signature == ogone_signature
 
     @staticmethod
@@ -204,20 +200,18 @@ class Ogone(object):
     def sign(data, hash_method=None, secret=None, out=False,
              settings=ogone_settings):
         """ Sign the given data. """
-
         if not hash_method:
-            hash_method = settings.HASH_METHOD
+            hash_method = settings.OGONE_HASH_METHOD
 
         if not secret:
             if out:
-                secret = settings.SHA_POST_SECRET
+                secret = settings.OGONE_SHA_POST_SECRET
             else:
-                secret = settings.SHA_PRE_SECRET
+                secret = settings.OGONE_SHA_PRE_SECRET
 
         return ogone_security.OgoneSignature(data,
-                    hash_method=hash_method,
-                    secret=secret).signature()
-
+                                             hash_method=hash_method,
+                                             secret=secret).signature()
 
 
     def get_ogone_signature(self):
@@ -238,14 +232,14 @@ class OgoneDirectLink(Ogone):
     def get_action(production=None, settings=ogone_settings):
         """ Get the relevant action parameter from the settings. """
 
-        PROD_URL = settings.DIRECT_LINK_PROD_URL
-        TEST_URL = settings.DIRECT_LINK_TEST_URL
+        PROD_URL = settings.OGONE_DIRECT_LINK_PROD_URL
+        TEST_URL = settings.OGONE_DIRECT_LINK_TEST_URL
 
         assert isinstance(PROD_URL, unicode) or isinstance(PROD_URL, str)
         assert isinstance(TEST_URL, unicode) or isinstance(TEST_URL, str)
 
         if production is None:
-            production = settings.PRODUCTION
+            production = settings.OGONE_PRODUCTION
 
         if production:
             log.debug('Returning production URL: %s', PROD_URL)
@@ -257,15 +251,15 @@ class OgoneDirectLink(Ogone):
     @staticmethod
     def get_data(data, settings=ogone_settings):
         # Check required fields
-        assert 'orderID' in data or 'PAYID' in data
-        assert 'amount' in data
+        assert 'ORDERID' in data or 'PAYID' in data
+        assert 'AMOUNT' in data
         # Make sure amount is an int
-        assert isinstance(data['amount'], (int, long)) or data['amount'].isdigit()
+        assert isinstance(data['AMOUNT'], (int, long)) or data['AMOUNT'].isdigit()
 
-        data['PSPID'] = settings.PSPID
-        data['USERID'] = settings.USERID
-        data['PSWD'] = settings.PSWD
-        data['SHASign'] = Ogone.sign(data, settings=settings)
+        data['PSPID'] = settings.OGONE_PSPID
+        data['USERID'] = settings.OGONE_API_USRID
+        data['PSWD'] = settings.OGONE_API_PSWD
+        data['SHASIGN'] = Ogone.sign(data, settings=settings)
 
         return data
 
@@ -284,7 +278,7 @@ class OgoneDirectLink(Ogone):
         doc = xml.dom.minidom.parseString(xml_str)
         attrs = doc.documentElement.attributes
         return dict([(attrs.item(i).name, attrs.item(i).value) \
-                    for i in range(attrs.length)])
+                     for i in range(attrs.length)])
 
     # DirectLink doesn't return a signature, so, fake the signature coercion.
     def is_valid(self):
